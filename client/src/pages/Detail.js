@@ -5,6 +5,32 @@ import { useQuery } from '@apollo/client';
 import { QUERY_PRODUCTS } from '../utils/queries';
 import spinner from '../assets/spinner.gif';
 
+import {
+  REMOVE_FROM_CART,
+  UPDATE_CART_QUANTITY,
+  ADD_TO_CART,
+  UPDATE_PRODUCTS,
+} from '../utils/actions';
+import CartItem from '../components/CartItem';
+
+const addToCart = () => {
+  const itemInCart = cart.find((CartItem) => CartItem._id === id);
+
+  if (itemInCart) {
+    dispatchEvent({
+      type: UPDATE_CART_QUANTITY,
+      _id: id,
+      purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1
+    })
+  } else {
+    dispatchEvent({
+      type: ADD_TO_CART,
+      product: { ...currentProduct, purchaseQuantity: 1 }
+    });
+  }
+  
+};
+
 function Detail() {
   const { id } = useParams();
 
@@ -39,10 +65,12 @@ function Detail() {
           <img
             src={`/images/${currentProduct.image}`}
             alt={currentProduct.name}
+            
           />
         </div>
       ) : null}
       {loading ? <img src={spinner} alt="loading" /> : null}
+      <Cart />
     </>
   );
 }
